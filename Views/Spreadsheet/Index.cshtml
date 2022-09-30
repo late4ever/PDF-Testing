@@ -1,0 +1,890 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<style>
+    #configurator .paper label {
+        display: inline-block;
+        width: 80px;
+    }
+
+    #configurator .paper .k-dropdownlist {
+        width: 120px;
+    }
+
+    #configurator .margins .k-numerictextbox {
+        width: 80px;
+    }
+
+    #configurator .margins label {
+        display: inline-block;
+        width: 50px;
+    }
+
+    #configurator .actions {
+        clear: left;
+    }
+</style>
+
+
+<link href="https://d3fu8oi3wk1rz4.cloudfront.net/kendo-docs-demos-assets/2.1.0/styles/demos/pages/demorunner.min.css?v=$VERSION" rel="stylesheet" />
+
+<br /><br /><br />
+<div class="row">
+    <div class="col">
+        <form action="@Url.Action("SaveAsPDF", "Spreadsheet")" method="POST">
+            <div class="configurator" id="configurator">
+                <div class="header">Configurator</div>
+                <input type="hidden" id="data" name="data" />
+                <input type="hidden" id="active-sheet" name="activeSheet" />
+                <input type="hidden" id="selection" name="selection" />
+                <div class="box-col">
+                    <h4>Print</h4>
+                    <ul>
+                        <li>
+                            <input id="source-entire-workbook" type="radio" name="options.Source" value="EntireWorkbook" checked="checked" />
+                            <label for="source-entire-workbook">Entire Workbook</label>
+                        </li>
+                        <li>
+                            <input id="source-active-sheet" type="radio" name="options.Source" value="ActiveSheet" />
+                            <label for="source-active-sheet">Active Sheet</label>
+                        </li>
+                        <li>
+                            <input id="source-selection" type="radio" name="options.Source" value="Selection" />
+                            <label for="source-selection">Selection</label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="box-col">
+                    <h4>Paper</h4>
+                    <ul class="paper">
+                        <li>
+                            <label for="paper-size">Paper Size</label>
+                            <select id="paper-size" name="options.PaperSize" data-role="dropdownlist">
+                                <option>A0</option>
+                                <option>A1</option>
+                                <option>A2</option>
+                                <option>A3</option>
+                                <option selected="selected">A4</option>
+                                <option>Letter</option>
+                                <option>Legal</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label for="orientation">Orientation</label>
+                            <select id="orientation" name="options.Orientation" data-role="dropdownlist">
+                                <option>Portrait</option>
+                                <option selected="selected">Landscape</option>
+                            </select>
+                        </li>
+                    </ul>
+                </div>
+                <div class="box-col">
+                    <h4>Margins, cm</h4>
+                    <ul class="margins">
+                        <li>
+                            <label for="margin-top">Top</label>
+                            <input id="margin-top" name="options.Margins.Top" value="2"
+                                   data-role="numerictextbox" data-bind="value: margin.top"
+                                   data-format="n" data-min="0" data-max="10" />
+                        </li>
+                        <li>
+                            <label for="margin-right">Right</label>
+                            <input id="margin-right" name="options.Margins.Right" value="1"
+                                   data-role="numerictextbox" data-bind="value: margin.right"
+                                   data-format="n" data-min="0" data-max="10" />
+                        </li>
+                        <li>
+                            <label for="margin-bottom">Bottom</label>
+                            <input id="margin-bottom" name="options.Margins.Bottom" value="1"
+                                   data-role="numerictextbox" data-bind="value: margin.bottom"
+                                   data-format="n" data-min="0" data-max="10" />
+                        </li>
+                        <li>
+                            <label for="margin-left">Left</label>
+                            <input id="margin-left" name="options.Margins.Left" value="2"
+                                   data-role="numerictextbox" data-bind="value: margin.left"
+                                   data-format="n" data-min="0" data-max="10" />
+                        </li>
+                    </ul>
+                </div>
+                <div class="box-col">
+                    <h4>Options</h4>
+                    <ul>
+                        <li>
+                            <input id="center-horizontally" type="checkbox" name="options.CenterHorizontally" value="true" />
+                            <label for="center-horizontally">Center Horizontally</label>
+                        </li>
+                        <li>
+                            <input id="center-vertically" type="checkbox" name="options.CenterVertically" value="true" />
+                            <label for="center-vertically">Center Vertically</label>
+                        </li>
+                        <li>
+                            <input id="print-guidelines" type="checkbox" name="options.PrintGridlines" value="true" checked="checked" />
+                            <label for="print-guidelines">Print Guidelines</label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="actions">
+                    <button type="submit" class="pdf">Generate PDF...</button>
+                </div>
+            </div>
+        </form>
+
+        @(Html.Kendo().Spreadsheet()
+            .Name("spreadsheet")
+            .HtmlAttributes(new { style = "width:100%;" })
+            .Sheets(sheets =>
+            {
+                sheets.Add()
+                    .Name("Food Order #1")
+                    .MergedCells("A1:F1", "C15:E15")
+                    .Columns(columns =>
+                    {
+                        columns.Add().Width(100);
+                        columns.Add().Width(215);
+                        columns.Add().Width(115);
+                        columns.Add().Width(115);
+                        columns.Add().Width(115);
+                        columns.Add().Width(155);
+                    })
+                    .Rows(rows =>
+                    {
+                        rows.Add().Height(50).Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value("My Company - Order #1")
+                                .FontSize(25)
+                                .Background("rgb(142,196,65)")
+                                .TextAlign(SpreadsheetTextAlign.Center)
+                                .Color("white");
+                        });
+
+                        rows.Add().Height(25).Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value("ID")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Product")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Quantity")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Price")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Tax")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Amount")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(216321)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Calzone");
+
+                            cells.Add()
+                                .Value(1)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(12.39)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C3*D3*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C3*D3+E3")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(546897)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Margarita")
+                                .Background("rgb(234,240,186)");
+
+                            cells.Add()
+                                .Value(2)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(8.79)
+                                .Background("rgb(234,240,186)")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C4*D4*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C4*D4+E4")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(456231)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Pollo Formaggio");
+
+                            cells.Add()
+                                .Value(1)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(13.99)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C5*D5*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C5*D5+E5")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(455873)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Greek Salad")
+                                .Background("rgb(234,240,186)");
+
+                            cells.Add()
+                                .Value(1)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(9.49)
+                                .Background("rgb(234,240,186)")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C6*D6*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C6*D6+E6")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(456892)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Spinach and Blue Cheese");
+
+                            cells.Add()
+                                .Value(3)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(11.49)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C7*D7*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C7*D7+E7")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(546564)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Rigoletto")
+                                .Background("rgb(234,240,186)");
+
+                            cells.Add()
+                                .Value(1)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(10.99)
+                                .Background("rgb(234,240,186)")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C8*D8*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C8*D8+E8")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(789455)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Creme Brulee");
+
+                            cells.Add()
+                                .Value(5)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(6.99)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C9*D9*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C9*D9+E9")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(123002)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Radeberger Beer")
+                                .Background("rgb(234,240,186)");
+
+                            cells.Add()
+                                .Value(4)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(4.99)
+                                .Background("rgb(234,240,186)")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C10*D10*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C10*D10+E10")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(564896)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Budweiser Beer");
+
+                            cells.Add()
+                                .Value(3)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(4.49)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C11*D11*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C11*D11+E11")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Index(13).Cells(cells =>
+                        {
+                            cells.Add()
+                                .Background("rgb(212,223,50)");
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)");
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)");
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)");
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Right);
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)")
+                                .Formula("SUM(F3:F11)*0.1")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Index(14).Height(50).Cells(cells =>
+                        {
+                            cells.Add()
+                                .Index(0)
+                                .Background("rgb(142,196,65)");
+
+                            cells.Add()
+                                .Index(1)
+                                .Background("rgb(142,196,65)");
+
+                            cells.Add()
+                                .Value("Total Amount")
+                                .Index(2)
+                                .TextAlign(SpreadsheetTextAlign.Right)
+                                .Color("white")
+                                .FontSize(20)
+                                .Background("rgb(142,196,65)");
+
+                            cells.Add()
+                                .Index(5)
+                                .Background("rgb(142,196,65)")
+                                .Color("white")
+                                .Formula("SUM(F3:F14)")
+                                .Format("$#,##0.00");
+                        });
+                    });
+
+                sheets.Add()
+                    .Name("Food Order #2")
+                    .MergedCells("A1:F1", "C15:E15")
+                    .Columns(columns =>
+                    {
+                        columns.Add().Width(100);
+                        columns.Add().Width(215);
+                        columns.Add().Width(115);
+                        columns.Add().Width(115);
+                        columns.Add().Width(115);
+                        columns.Add().Width(155);
+                    })
+                    .Rows(rows =>
+                    {
+                        rows.Add().Height(50).Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value("My Company - Order #2")
+                                .FontSize(25)
+                                .Background("rgb(142,196,65)")
+                                .TextAlign(SpreadsheetTextAlign.Center)
+                                .Color("white");
+                        });
+
+                        rows.Add().Height(25).Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value("ID")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Product")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Quantity")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Price")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Tax")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Amount")
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(216321)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Calzone");
+
+                            cells.Add()
+                                .Value(1)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(12.39)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C3*D3*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C3*D3+E3")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(546897)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Margarita")
+                                .Background("rgb(234,240,186)");
+
+                            cells.Add()
+                                .Value(2)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(8.79)
+                                .Background("rgb(234,240,186)")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C4*D4*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C4*D4+E4")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(456231)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Pollo Formaggio");
+
+                            cells.Add()
+                                .Value(1)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(13.99)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C5*D5*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C5*D5+E5")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(455873)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Greek Salad")
+                                .Background("rgb(234,240,186)");
+
+                            cells.Add()
+                                .Value(1)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(9.49)
+                                .Background("rgb(234,240,186)")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C6*D6*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C6*D6+E6")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(456892)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Spinach and Blue Cheese");
+
+                            cells.Add()
+                                .Value(3)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(11.49)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C7*D7*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C7*D7+E7")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(546564)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Rigoletto")
+                                .Background("rgb(234,240,186)");
+
+                            cells.Add()
+                                .Value(1)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(10.99)
+                                .Background("rgb(234,240,186)")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C8*D8*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C8*D8+E8")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(789455)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Creme Brulee");
+
+                            cells.Add()
+                                .Value(5)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(6.99)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C9*D9*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C9*D9+E9")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(123002)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value("Radeberger Beer")
+                                .Background("rgb(234,240,186)");
+
+                            cells.Add()
+                                .Value(4)
+                                .Background("rgb(234,240,186)")
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(4.99)
+                                .Background("rgb(234,240,186)")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C10*D10*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Background("rgb(234,240,186)")
+                                .Formula("C10*D10+E10")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Cells(cells =>
+                        {
+                            cells.Add()
+                                .Value(564896)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add().Value("Budweiser Beer");
+
+                            cells.Add()
+                                .Value(3)
+                                .TextAlign(SpreadsheetTextAlign.Center);
+
+                            cells.Add()
+                                .Value(4.49)
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C11*D11*0.2")
+                                .Format("$#,##0.00");
+
+                            cells.Add()
+                                .Formula("C11*D11+E11")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Index(13).Cells(cells =>
+                        {
+                            cells.Add()
+                                .Background("rgb(212,223,50)");
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)");
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)");
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)");
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)")
+                                .TextAlign(SpreadsheetTextAlign.Right);
+
+                            cells.Add()
+                                .Background("rgb(212,223,50)")
+                                .Formula("SUM(F3:F11)*0.1")
+                                .Format("$#,##0.00");
+                        });
+
+                        rows.Add().Index(14).Height(50).Cells(cells =>
+                        {
+                            cells.Add()
+                                .Index(0)
+                                .Background("rgb(142,196,65)");
+
+                            cells.Add()
+                                .Index(1)
+                                .Background("rgb(142,196,65)");
+
+                            cells.Add()
+                                .Value("Total Amount")
+                                .Index(2)
+                                .TextAlign(SpreadsheetTextAlign.Right)
+                                .Color("white")
+                                .FontSize(20)
+                                .Background("rgb(142,196,65)");
+
+                            cells.Add()
+                                .Index(5)
+                                .Background("rgb(142,196,65)")
+                                .Color("white")
+                                .Formula("SUM(F3:F14)")
+                                .Format("$#,##0.00");
+                        });
+                    });
+            })
+        )
+
+
+    </div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.4.0/jszip.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".pdf").click(function () {
+            var spreadsheet = $("#spreadsheet").data("kendoSpreadsheet");
+            $("#data").val(JSON.stringify(spreadsheet.toJSON()));
+            $("#active-sheet").val(spreadsheet.activeSheet().name());
+            var topLeftRow = spreadsheet.activeSheet().selection()._ref.topLeft.row;
+            var topLeftCol = spreadsheet.activeSheet().selection()._ref.topLeft.col;
+            var bottomRightRow = spreadsheet.activeSheet().selection()._ref.bottomRight.row;
+            var bottomRightCol = spreadsheet.activeSheet().selection()._ref.bottomRight.col;
+            var selection = [];
+            selection.push(topLeftRow);
+            selection.push(topLeftCol);
+            selection.push(bottomRightRow);
+            selection.push(bottomRightCol);
+
+            $("#selection").val(selection);
+        });
+
+
+        kendo.init($("#configurator"));
+    });
+</script>
